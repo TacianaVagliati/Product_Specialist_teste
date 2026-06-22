@@ -1,3 +1,3 @@
 # Product_Specialist_teste
 
-Criado para validar o cenário de Product Specialist do Ai First.
+Criado para validar o cenário de Product Specialist do AI First.
