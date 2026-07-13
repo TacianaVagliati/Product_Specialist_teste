@@ -1,6 +1,7 @@
 # Exercício 3.2 — Harness de Produto para Melhoria Contínua
+# Harness de Produto — NovaTech Assistant  
 **Versão:** 1.1 (paths e IDs de guardrail alinhados ao `docs/guardrails.md` atualizado no Cenário 3)  
-**Papel:** Product Specialist  
+**Autor:** Product Specialist   
 **Exercício:** Cenário 3 — Ex. 3.2 (Product Specialist)  
 **Referências:** `docs/guardrails.md`, `specs/query-endpoint/requirements.md` (pendente — Ex. 2.1, Product Specialist/Design), ADR-0002, ADR-0003  
 **Programa:** Trilha AI First — DGS/DB1
@@ -9,13 +10,6 @@
 
 > Este documento é o artefato a ser salvo em `specs/query-endpoint/harness-produto.md`.
 > Define como o assistente evolui após o go-live sem degradar qualidade nem violar guardrails.
-
----
-
-# Harness de Produto — NovaTech Assistant
-**Versão:** 1.0  
-**Autor:** Product Specialist 
-**Referências:** `specs/query-endpoint/guardrails.md`, `specs/query-endpoint/requirements.md`, ADR-0002, ADR-0003
 
 ---
 
