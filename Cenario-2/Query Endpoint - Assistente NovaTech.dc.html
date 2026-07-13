@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    a { color: #2a5f9e; text-decoration: none; }
+    a:hover { color: #1b3a5f; text-decoration: underline; }
+    .nt-scroll::-webkit-scrollbar { width: 10px; }
+    .nt-scroll::-webkit-scrollbar-thumb { background: #c9d1dc; border-radius: 6px; border: 3px solid #eef1f5; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; background: #eef1f5; font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1a2432; -webkit-font-smoothing: antialiased;">
+
+  <!-- Top bar -->
+  <header style="height: 58px; background: {{ brandColor }}; display: flex; align-items: center; justify-content: space-between; padding: 0 22px; color: #fff;">
+    <div style="display: flex; align-items: center; gap: 11px;">
+      <div style="width: 26px; height: 26px; background: #fff; transform: rotate(45deg); border-radius: 4px; position: relative;">
+        <div style="position: absolute; inset: 7px; background: {{ brandColor }}; border-radius: 2px;"></div>
+      </div>
+      <div style="font-weight: 700; font-size: 16px; letter-spacing: -0.2px;">NovaTech</div>
+      <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.28); margin: 0 4px;"></div>
+      <div style="font-size: 13.5px; font-weight: 500; opacity: 0.92;">Assistente de Atendimento</div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 14px; font-size: 12.5px;">
+      <span style="font-family: 'IBM Plex Mono', monospace; opacity: 0.72; font-size: 11.5px;">RAG · base do Anexo A</span>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.16); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px;">MC</div>
+        <span style="opacity: 0.92;">Marina Costa · Atendimento N1</span>
+      </div>
+    </div>
+  </header>
+
+  <div style="display: flex; align-items: stretch; max-width: 1220px; margin: 0 auto; min-height: calc(100vh - 58px);">
+
+    <!-- Sidebar -->
+    <aside class="nt-scroll" style="width: 306px; flex: none; background: #f7f9fb; border-right: 1px solid #dde3ea; padding: 18px 14px; overflow-y: auto;">
+      <sc-if value="{{ showChamadoPanel }}" hint-placeholder-val="{{ true }}">
+        <div style="background: #fff; border: 1px solid #dde3ea; border-radius: 8px; padding: 14px; margin-bottom: 18px;">
+          <div style="font-size: 10.5px; font-weight: 600; letter-spacing: 0.5px; color: #7a8698; text-transform: uppercase; margin-bottom: 10px;">Chamado em atendimento</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 14px; color: {{ brandColor }};">{{ cur.chamado.id }}</span>
+            <span style="font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; background: {{ cur.tierBg }}; color: {{ cur.tierColor }}; border: 1px solid {{ cur.tierBorder }};">{{ cur.tierLabel }}</span>
+          </div>
+          <div style="font-size: 13.5px; font-weight: 600; margin-bottom: 10px;">{{ cur.chamado.cliente }}</div>
+          <div style="display: grid; grid-template-columns: auto 1fr; gap: 5px 10px; font-size: 12px; color: #4a5568;">
+            <span style="color: #8a94a4;">CT-e</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px;">{{ cur.chamado.cte }}</span>
+            <span style="color: #8a94a4;">Região</span><span>{{ cur.chamado.regiao }}</span>
+            <span style="color: #8a94a4;">Carga</span><span>{{ cur.chamado.carga }}</span>
+          </div>
+        </div>
+      </sc-if>
+
+      <div style="font-size: 10.5px; font-weight: 600; letter-spacing: 0.5px; color: #7a8698; text-transform: uppercase; margin-bottom: 10px; padding-left: 4px;">Consultas de exemplo</div>
+      <sc-for list="{{ menu }}" as="m" hint-placeholder-count="4">
+        <button onClick="{{ m.onSelect }}" style="{{ m.style }}">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; color: {{ m.idColor }};">{{ m.code }}</span>
+            <sc-if value="{{ m.showTag }}" hint-placeholder-val="{{ true }}">
+              <span style="font-size: 9.5px; font-weight: 600; padding: 2px 6px; border-radius: 4px; background: {{ m.tagBg }}; color: {{ m.tagColor }}; letter-spacing: 0.2px;">{{ m.tag }}</span>
+            </sc-if>
+          </div>
+          <div style="font-size: 12.5px; font-weight: 500; line-height: 1.35; color: {{ m.labelColor }};">{{ m.label }}</div>
+        </button>
+      </sc-for>
+
+      <div style="margin-top: 20px; padding: 12px 12px; background: #eef2f7; border-radius: 8px; font-size: 11px; line-height: 1.5; color: #667085;">
+        <span style="font-weight: 600; color: #47536b;">Mockup — Exercício 2.1.</span> Cada consulta demonstra um requisito verificável do <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px;">requirements.md</span>.
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="nt-scroll" style="flex: 1; padding: 26px 34px 30px; overflow-y: auto; display: flex; flex-direction: column; min-width: 0;">
+
+      <!-- Atendente question -->
+      <div style="display: flex; gap: 12px; align-items: flex-start; margin-bottom: 22px;">
+        <div style="width: 30px; height: 30px; flex: none; border-radius: 50%; background: #dde6f0; color: #3a5578; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 11px;">MC</div>
+        <div style="background: #fff; border: 1px solid #dde3ea; border-radius: 10px; border-top-left-radius: 3px; padding: 12px 16px; max-width: 620px;">
+          <div style="font-size: 10.5px; font-weight: 600; color: #8a94a4; margin-bottom: 4px; letter-spacing: 0.3px;">PERGUNTA DO ATENDENTE</div>
+          <div style="font-size: 15px; line-height: 1.5; font-weight: 500;">{{ cur.question }}</div>
+        </div>
+      </div>
+
+      <!-- Answer card -->
+      <div style="background: #fff; border: 1px solid #d6dde6; border-radius: 12px; box-shadow: 0 1px 3px rgba(26,36,50,0.05), 0 8px 24px rgba(26,36,50,0.05); overflow: hidden; max-width: 760px;">
+
+        <!-- Answer header: assistant + confidence -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; border-bottom: 1px solid #eef1f5; background: #fbfcfd;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 28px; height: 28px; border-radius: 7px; background: {{ brandColor }}; display: flex; align-items: center; justify-content: center;">
+              <div style="width: 12px; height: 12px; background: #fff; transform: rotate(45deg); border-radius: 2px;"></div>
+            </div>
+            <div>
+              <div style="font-size: 13.5px; font-weight: 600;">Resposta do Assistente</div>
+              <sc-if value="{{ showSpecTags }}" hint-placeholder-val="{{ true }}">
+                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #96a0b0; margin-top: 1px;">{{ cur.rfTag }}</div>
+              </sc-if>
+            </div>
+          </div>
+          <div style="text-align: right;">
+            <div style="display: flex; align-items: center; gap: 8px; justify-content: flex-end;">
+              <span style="font-size: 10.5px; font-weight: 600; color: #8a94a4; letter-spacing: 0.3px;">CONFIANÇA</span>
+              <span style="font-size: 12.5px; font-weight: 700; color: {{ cur.confColor }};">{{ cur.confLevel }}</span>
+            </div>
+            <div style="width: 132px; height: 6px; background: #e9edf2; border-radius: 4px; margin-top: 6px; overflow: hidden;">
+              <div style="width: {{ cur.confPct }}; height: 100%; background: {{ cur.confColor }}; border-radius: 4px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Answer body -->
+        <div style="padding: 20px 22px;">
+
+          <!-- Correction banner (Platinum) -->
+          <sc-if value="{{ cur.isCorrection }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; gap: 11px; align-items: flex-start; background: #fbeaea; border: 1px solid #eecaca; border-radius: 9px; padding: 13px 15px; margin-bottom: 15px;">
+              <div style="width: 20px; height: 20px; flex: none; border-radius: 50%; background: #c0392b; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; line-height: 1;">!</div>
+              <div style="font-size: 14.5px; font-weight: 600; color: #9a2a20; line-height: 1.4;">{{ cur.correctionTitle }}</div>
+            </div>
+          </sc-if>
+
+          <div style="font-size: 14.5px; line-height: 1.62; color: #2a3444;">{{ cur.answer }}</div>
+
+          <!-- Contradiction: two versions side by side -->
+          <sc-if value="{{ cur.isContradiction }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top: 18px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 11px;">
+                <span style="font-size: 11px; font-weight: 700; color: #b06a00; background: #fbf1de; border: 1px solid #f0dcb0; padding: 3px 9px; border-radius: 5px; letter-spacing: 0.2px;">⚠ CONTRADIÇÃO NA BASE</span>
+                <span style="font-size: 12px; color: #667085;">Duas versões coexistem sem hierarquia formal.</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div style="border: 1px solid #d6dde6; border-radius: 9px; padding: 13px 15px; background: #fbfcfd;">
+                  <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; color: #47536b;">{{ cur.contradiction.v1.title }}</div>
+                  <div style="font-size: 11px; color: #8a94a4; margin: 2px 0 11px;">{{ cur.contradiction.v1.date }}</div>
+                  <div style="display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 12.5px;">
+                    <span style="color: #8a94a4;">Multiplicador</span><span style="font-family: 'IBM Plex Mono', monospace; font-weight: 600;">{{ cur.contradiction.v1.mult }}</span>
+                    <span style="color: #8a94a4;">Fator de peso</span><span style="font-family: 'IBM Plex Mono', monospace; font-weight: 600;">{{ cur.contradiction.v1.fator }}</span>
+                    <span style="color: #8a94a4;">Prazo</span><span style="font-family: 'IBM Plex Mono', monospace; font-weight: 600;">{{ cur.contradiction.v1.prazo }}</span>
+                  </div>
+                </div>
+                <div style="border: 1px solid #cdd9e6; border-radius: 9px; padding: 13px 15px; background: #f4f8fc;">
+                  <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; color: {{ brandColor }};">{{ cur.contradiction.v2.title }}</div>
+                  <div style="font-size: 11px; color: #8a94a4; margin: 2px 0 11px;">{{ cur.contradiction.v2.date }}</div>
+                  <div style="display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 12.5px;">
+                    <span style="color: #8a94a4;">Multiplicador</span><span style="font-family: 'IBM Plex Mono', monospace; font-weight: 600;">{{ cur.contradiction.v2.mult }}</span>
+                    <span style="color: #8a94a4;">Fator de peso</span><span style="font-family: 'IBM Plex Mono', monospace; font-weight: 600;">{{ cur.contradiction.v2.fator }}</span>
+                    <span style="color: #8a94a4;">Prazo</span><span style="font-family: 'IBM Plex Mono', monospace; font-weight: 600;">{{ cur.contradiction.v2.prazo }}</span>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-top: 12px; font-size: 12.5px; line-height: 1.55; color: #5a6577; background: #f2f5f8; border-radius: 8px; padding: 11px 14px;">
+                <span style="font-weight: 600; color: #3a4658;">Regra de transição.</span> {{ cur.contradiction.transition }}
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- Escalation callout -->
+          <sc-if value="{{ cur.hasEscalation }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top: 16px; display: flex; align-items: center; gap: 12px; background: #fff6ec; border: 1px solid #f2d9b8; border-left: 4px solid #d98a2b; border-radius: 8px; padding: 13px 16px;">
+              <span style="font-size: 18px; color: #c47519; font-weight: 700;">→</span>
+              <div>
+                <div style="font-size: 10.5px; font-weight: 600; letter-spacing: 0.4px; color: #b06a00; margin-bottom: 2px;">AÇÃO NECESSÁRIA — ESCALAÇÃO</div>
+                <div style="font-size: 14px; font-weight: 600; color: #7a4d10;">{{ cur.escalation }}</div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- Sources -->
+          <div style="margin-top: 20px; border-top: 1px solid #eef1f5; padding-top: 16px;">
+            <div style="font-size: 10.5px; font-weight: 600; letter-spacing: 0.5px; color: #8a94a4; text-transform: uppercase; margin-bottom: 11px;">Fonte{{ cur.sourcePlural }} · rastreabilidade</div>
+            <sc-for list="{{ cur.sources }}" as="s" hint-placeholder-count="1">
+              <div style="border: 1px solid {{ s.cardBorder }}; border-radius: 9px; padding: 13px 15px; margin-bottom: 10px; background: {{ s.cardBg }};">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+                  <div style="display: flex; align-items: center; gap: 9px;">
+                    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; font-weight: 600; color: {{ brandColor }};">{{ s.id }}</span>
+                    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #8a94a4;">{{ s.version }}</span>
+                    <span style="font-size: 12px; color: #667085;">· {{ s.section }}</span>
+                  </div>
+                  <span style="font-size: 9.5px; font-weight: 700; letter-spacing: 0.4px; padding: 3px 8px; border-radius: 5px; background: {{ s.authBg }}; color: {{ s.authColor }};">{{ s.authLabel }}</span>
+                </div>
+                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; line-height: 1.55; color: #4a5568; padding-left: 11px; border-left: 3px solid {{ s.quoteBar }};">{{ s.excerpt }}</div>
+                <sc-if value="{{ s.informal }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top: 9px; font-size: 11.5px; line-height: 1.45; color: #9a6a10; background: #fdf6e8; border-radius: 6px; padding: 8px 11px;">⚠ Documento informal — <strong>não validado por Compliance</strong>. Confirme na normativa antes de repassar ao cliente.</div>
+                </sc-if>
+              </div>
+            </sc-for>
+            <div style="font-size: 11px; color: #9aa4b2; margin-top: 4px; line-height: 1.45;">Confiança = relevância da recuperação × autoridade da fonte × ausência de contradição <span style="font-family: 'IBM Plex Mono', monospace;">(ADR-04)</span></div>
+          </div>
+
+          <!-- Feedback -->
+          <div style="margin-top: 18px; border-top: 1px solid #eef1f5; padding-top: 16px;">
+
+            <sc-if value="{{ fb.idle }}" hint-placeholder-val="{{ true }}">
+              <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+                <span style="font-size: 13px; font-weight: 500; color: #4a5568;">Esta resposta resolveu o atendimento?</span>
+                <div style="display: flex; gap: 8px;">
+                  <button onClick="{{ markUseful }}" style="font-family: inherit; font-size: 12.5px; font-weight: 600; color: #1f7a4d; background: #eaf5ee; border: 1px solid #bfe0cc; border-radius: 7px; padding: 7px 15px; cursor: pointer;">Sim, resolveu</button>
+                  <button onClick="{{ openReport }}" style="font-family: inherit; font-size: 12.5px; font-weight: 600; color: #b23b3b; background: #fbecec; border: 1px solid #eecaca; border-radius: 7px; padding: 7px 15px; cursor: pointer;">Reportar problema</button>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ fb.useful }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size: 13px; font-weight: 500; color: #1f7a4d; background: #eaf5ee; border: 1px solid #bfe0cc; border-radius: 8px; padding: 11px 15px;">✓ Marcado como útil. Sinal registrado para a curadoria da base.</div>
+            </sc-if>
+
+            <sc-if value="{{ fb.reporting }}" hint-placeholder-val="{{ false }}">
+              <div style="background: #fbfcfd; border: 1px solid #e0d4d4; border-radius: 9px; padding: 15px;">
+                <div style="font-size: 12.5px; font-weight: 600; color: #4a5568; margin-bottom: 9px;">O que estava errado ou faltando nesta resposta?</div>
+                <textarea onInput="{{ setReport }}" placeholder="Ex.: o multiplicador aplicado não corresponde ao contrato do cliente..." style="width: 100%; min-height: 68px; resize: vertical; font-family: inherit; font-size: 13px; line-height: 1.5; color: #2a3444; border: 1px solid #d6dde6; border-radius: 7px; padding: 10px 12px; outline: none;"></textarea>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 11px; gap: 10px; flex-wrap: wrap;">
+                  <span style="font-size: 11.5px; color: #8a94a4;">→ Roteado para a <strong style="color:#5a6577;">fila de curadoria</strong> (Gestão Documental) · responsável por <span style="font-family:'IBM Plex Mono',monospace;">{{ cur.reviewDoc }}</span></span>
+                  <div style="display: flex; gap: 8px;">
+                    <button onClick="{{ cancelReport }}" style="font-family: inherit; font-size: 12.5px; font-weight: 500; color: #667085; background: #f0f2f5; border: 1px solid #dde3ea; border-radius: 7px; padding: 8px 15px; cursor: pointer;">Cancelar</button>
+                    <button onClick="{{ submitReport }}" style="font-family: inherit; font-size: 12.5px; font-weight: 600; color: #fff; background: {{ brandColor }}; border: none; border-radius: 7px; padding: 8px 17px; cursor: pointer;">Enviar à curadoria</button>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ fb.submitted }}" hint-placeholder-val="{{ false }}">
+              <div style="display: flex; gap: 12px; align-items: flex-start; background: #eef4ea; border: 1px solid #cfe0c0; border-radius: 9px; padding: 14px 16px;">
+                <div style="width: 22px; height: 22px; flex: none; border-radius: 50%; background: #4a8f52; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">✓</div>
+                <div>
+                  <div style="font-size: 13.5px; font-weight: 600; color: #3a6b3f; margin-bottom: 3px;">Feedback enviado à fila de curadoria (Gestão Documental) · <span style="font-family: 'IBM Plex Mono', monospace;">{{ fb.ticket }}</span></div>
+                  <div style="font-size: 12.5px; line-height: 1.5; color: #55705a;">O responsável pelo documento <span style="font-family: 'IBM Plex Mono', monospace;">{{ cur.reviewDoc }}</span> foi notificado. Após revisão e reindexação, a correção volta ao assistente — fechando o loop <span style="font-family: 'IBM Plex Mono', monospace;">RF-08</span>.</div>
+                </div>
+              </div>
+            </sc-if>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Query input bar (decorative) -->
+      <div style="margin-top: 22px; max-width: 760px; display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #d6dde6; border-radius: 10px; padding: 8px 8px 8px 16px;">
+        <span style="color: #b4bcc8; font-size: 14px;">Pergunte à base de conhecimento da NovaTech…</span>
+        <div style="flex: 1;"></div>
+        <button style="font-family: inherit; font-size: 13px; font-weight: 600; color: #fff; background: {{ brandColor }}; border: none; border-radius: 7px; padding: 9px 20px; cursor: default; opacity: 0.5;">Consultar</button>
+      </div>
+
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1220, &quot;height&quot;: 840 },
+  &quot;brandColor&quot;: { &quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#1b3a5f&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;#1b3a5f&quot;, &quot;#123a2e&quot;, &quot;#3a2f1b&quot;, &quot;#26303f&quot;] },
+  &quot;showSpecTags&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Demonstração&quot; },
+  &quot;showChamadoPanel&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Demonstração&quot; }
+}">
+class Component extends DCLogic {
+  state = {
+    scenario: 'A',
+    fb: { A: 'idle', B: 'idle', C: 'idle', D: 'submitted' },
+    ticket: { D: 'FB-1042' },
+    reportText: ''
+  };
+
+  DATA = {
+    A: {
+      chamado: { id: '#48213', cliente: 'Distribuidora Sul Ltda', tier: 'Silver', cte: '35 24 0512 8841', regiao: 'Sul', carga: '12 volumes · 340 kg' },
+      question: 'Qual o prazo para o cliente solicitar a devolução de uma mercadoria já entregue?',
+      confLevel: 'Alta', confPct: 92,
+      rfTag: 'RF-01 · Fonte obrigatória',
+      menuLabel: 'Prazo de devolução', menuCode: 'DEVOLUÇÕES', menuTag: 'Alta confiança',
+      answer: 'O cliente pode solicitar a devolução em até 7 dias úteis após a data de recebimento confirmada no tracking. A contagem exclui sábados, domingos e feriados nacionais. Atenção: a política não se aplica a mercadorias ainda em trânsito — nesse caso, consultar o PROC-088 (interceptação de carga).',
+      isContradiction: false, isCorrection: false, escalation: null,
+      sources: [
+        { id: 'POL-001', version: 'v3.1', section: '§3.1 Prazo geral', auth: 'normativo', excerpt: '"O cliente pode solicitar a devolução de mercadorias em até 7 (sete) dias úteis após a data de recebimento confirmada no sistema de tracking."', informal: false }
+      ]
+    },
+    B: {
+      chamado: { id: '#48219', cliente: 'AgroNorte Comércio', tier: 'Gold', cte: '35 24 0788 1120', regiao: 'Nordeste', carga: '1 volume · 1.800 kg' },
+      question: 'Qual o multiplicador de frete especial para uma carga de 1.800 kg com destino ao Nordeste?',
+      confLevel: 'Média', confPct: 55,
+      rfTag: 'RF-05 · Contradição não resolvida',
+      menuLabel: 'Multiplicador de frete — Nordeste', menuCode: 'FRETE ESP.', menuTag: 'Contradição',
+      answer: 'Encontrei duas versões vigentes da PROC-042 na base, com valores divergentes e sem hierarquia formal entre elas. Não vou escolher por você: confira a data de abertura do chamado para aplicar a versão correta.',
+      isContradiction: true, isCorrection: false, escalation: null,
+      contradiction: {
+        v1: { title: 'PROC-042 v1.0', date: 'emitida 03/03/2023', mult: '1.4', fator: '1.2', prazo: '+2 dias' },
+        v2: { title: 'PROC-042 v2.0', date: 'emitida 10/11/2023', mult: '1.5', fator: '1.15', prazo: '+3 dias' },
+        transition: 'Chamados abertos antes de 01/12/2023 usam a v1; a partir dessa data, a v2 (PROC-042-v2 §5). Nenhuma das versões está marcada como obsoleta no SharePoint.'
+      },
+      sources: [
+        { id: 'PROC-042', version: 'v1.0', section: '§2.1 Multiplicadores', auth: 'procedimento', excerpt: '"Nordeste → 1.4. Fator de peso: 1.2 para cargas de 1.001kg a 3.000kg."', informal: false },
+        { id: 'PROC-042-v2', version: 'v2.0', section: '§2.1 Multiplicadores', auth: 'procedimento', excerpt: '"Nordeste → 1.5. Fator de peso: 1.15 para cargas de 1.001kg a 3.000kg."', informal: false }
+      ]
+    },
+    C: {
+      chamado: { id: '#48224', cliente: 'Metalúrgica Prime', tier: 'Platinum?', cte: '35 24 0901 4470', regiao: 'Sudeste', carga: '4 volumes · 620 kg' },
+      question: 'O cliente afirma que é tier Platinum. Qual o SLA de resposta dele?',
+      confLevel: 'Alta', confPct: 88,
+      rfTag: 'RF-07 · Tier inexistente',
+      menuLabel: 'Cliente alega tier "Platinum"', menuCode: 'SLA / TIERS', menuTag: 'Correção',
+      isCorrection: true,
+      correctionTitle: 'O tier "Platinum" não existe na NovaTech.',
+      answer: 'Os únicos tiers são Gold, Silver e Standard. O cliente pode estar confundindo com outra transportadora ou com o programa de fidelidade descontinuado em 2022. Peça o número do contrato para verificar o tier real e o SLA de resposta aplicável (Gold 2h · Silver 4h · Standard 8h úteis).',
+      isContradiction: false, escalation: null,
+      sources: [
+        { id: 'SLA-2024', version: 'v2024.1', section: '§1 Classificação', auth: 'contratual', excerpt: '"A NovaTech classifica seus clientes em 3 (três) tiers... Não existem outros tiers além dos três listados acima."', informal: false },
+        { id: 'FAQ-Atendimento', version: 'item 15', section: 'Tier Platinum', auth: 'informal', excerpt: '"Não existe tier Platinum na NovaTech... Oriente que nossos tiers são Gold, Silver e Standard e peça o número do contrato."', informal: true }
+      ]
+    },
+    D: {
+      chamado: { id: '#48231', cliente: 'QuímiFarma S.A.', tier: 'Gold', cte: '35 24 1120 7788', regiao: 'Centro-Oeste', carga: '1 volume · líquido inflamável (ANTT cl. 3)' },
+      question: 'O cliente quer devolver uma carga de líquido inflamável entregue ontem. Pode?',
+      confLevel: 'Alta', confPct: 90,
+      rfTag: 'RF-03 · Escalação de carga perigosa',
+      menuLabel: 'Devolução de carga perigosa', menuCode: 'RISCOS', menuTag: 'Escalação',
+      answer: 'Não elegível pelo processo padrão. Cargas perigosas das classes 1 a 6 da ANTT (Resolução 5.947/2021) — líquido inflamável é classe 3 — não seguem o fluxo padrão de devolução. Oriente o cliente a contatar a Gestão de Riscos para tratamento individual. Não afirme que é impossível: pode haver exceção autorizada caso a caso.',
+      isContradiction: false, isCorrection: false,
+      escalation: 'Encaminhar para Gestão de Riscos · ramal 4500',
+      sources: [
+        { id: 'POL-001', version: 'v3.1', section: '§3.2 Exceções ao prazo', auth: 'normativo', excerpt: '"Cargas perigosas classificadas nas classes 1 a 6 da ANTT... NÃO são elegíveis para devolução pelo processo padrão."', informal: false },
+        { id: 'FAQ-Atendimento', version: 'item 3', section: 'Devolução carga perigosa', auth: 'informal', excerpt: '"Oficialmente não pode pelo processo padrão... não diga que é impossível — diga que precisa de tratamento especial."', informal: true }
+      ]
+    }
+  };
+
+  TIER = {
+    'Gold':      { label: 'Gold',        bg: '#fbf3df', color: '#9a7415', border: '#ecd9a6' },
+    'Silver':    { label: 'Silver',      bg: '#eef1f5', color: '#5a6577', border: '#d6dde6' },
+    'Standard':  { label: 'Standard',    bg: '#f0f2f5', color: '#6a7486', border: '#dde3ea' },
+    'Platinum?': { label: 'Platinum (?)', bg: '#fbeaea', color: '#b23b3b', border: '#eecaca' }
+  };
+
+  CONF = {
+    'Alta':  '#1f7a4d',
+    'Média': '#b06a00',
+    'Baixa': '#b23b3b'
+  };
+
+  AUTH = {
+    normativo:    { label: 'NORMATIVO',                bg: '#e6eef7', color: '#1b3a5f', bar: '#5a83b0', cardBg: '#fbfcfd', cardBorder: '#e4e9f0' },
+    contratual:   { label: 'CONTRATUAL',               bg: '#e6eef7', color: '#1b3a5f', bar: '#5a83b0', cardBg: '#fbfcfd', cardBorder: '#e4e9f0' },
+    procedimento: { label: 'PROCEDIMENTO',             bg: '#eef0f3', color: '#5a6577', bar: '#aab4c2', cardBg: '#fbfcfd', cardBorder: '#e4e9f0' },
+    informal:     { label: 'INFORMAL · NÃO VALIDADO',  bg: '#fbf1de', color: '#9a6a10', bar: '#e0b968', cardBg: '#fefaf1', cardBorder: '#f0e2c4' }
+  };
+
+  select(s) { this.setState({ scenario: s }); }
+  markUseful() { this.setState(st => ({ fb: { ...st.fb, [st.scenario]: 'useful' } })); }
+  openReport() { this.setState(st => ({ fb: { ...st.fb, [st.scenario]: 'reporting' }, reportText: '' })); }
+  cancelReport() { this.setState(st => ({ fb: { ...st.fb, [st.scenario]: 'idle' } })); }
+  setReport(e) { this.setState({ reportText: e.target.value }); }
+  submitReport() {
+    this.setState(st => {
+      const n = 1043 + Object.keys(st.ticket).length;
+      return {
+        fb: { ...st.fb, [st.scenario]: 'submitted' },
+        ticket: { ...st.ticket, [st.scenario]: st.ticket[st.scenario] || ('FB-' + n) }
+      };
+    });
+  }
+
+  brand() { return this.props.brandColor || '#1b3a5f'; }
+
+  renderVals() {
+    const sc = this.state.scenario;
+    const d = this.DATA[sc];
+    const brand = this.brand();
+    const showTags = this.props.showSpecTags !== false;
+
+    const tier = this.TIER[d.chamado.tier] || this.TIER['Standard'];
+    const confColor = this.CONF[d.confLevel] || '#5a6577';
+
+    const sources = d.sources.map(s => {
+      const a = this.AUTH[s.auth];
+      return {
+        id: s.id, version: s.version, section: s.section, excerpt: s.excerpt, informal: s.informal,
+        authLabel: a.label, authBg: a.bg, authColor: a.color, quoteBar: a.bar,
+        cardBg: s.informal ? a.cardBg : '#fbfcfd', cardBorder: s.informal ? a.cardBorder : '#e4e9f0'
+      };
+    });
+
+    const menu = ['A', 'B', 'C', 'D'].map(k => {
+      const it = this.DATA[k];
+      const active = k === sc;
+      return {
+        code: it.menuCode,
+        label: it.menuLabel,
+        tag: it.menuTag,
+        showTag: showTags,
+        onSelect: () => this.select(k),
+        idColor: active ? brand : '#a2acbb',
+        labelColor: active ? '#1a2432' : '#4a5568',
+        tagBg: active ? '#e6eef7' : '#eef1f5',
+        tagColor: active ? brand : '#8a94a4',
+        style: 'display:block; width:100%; text-align:left; margin-bottom:8px; padding:11px 13px; border-radius:9px; cursor:pointer; font-family:inherit;'
+          + (active
+              ? ('background:#fff; border:1px solid ' + brand + '; box-shadow:0 1px 3px rgba(26,36,50,0.08); border-left:3px solid ' + brand + ';')
+              : 'background:transparent; border:1px solid #e4e9f0; border-left:3px solid transparent;')
+      };
+    });
+
+    const fbState = this.state.fb[sc];
+    const cur = {
+      chamado: d.chamado,
+      tierLabel: tier.label, tierBg: tier.bg, tierColor: tier.color, tierBorder: tier.border,
+      question: d.question,
+      rfTag: d.rfTag,
+      confLevel: d.confLevel, confColor: confColor, confPct: d.confPct + '%',
+      answer: d.answer,
+      isCorrection: !!d.isCorrection, correctionTitle: d.correctionTitle || '',
+      isContradiction: !!d.isContradiction, contradiction: d.contradiction || { v1: {}, v2: {}, transition: '' },
+      hasEscalation: !!d.escalation, escalation: d.escalation || '',
+      sources: sources,
+      sourcePlural: sources.length > 1 ? 's' : '',
+      reviewDoc: d.sources[0].id
+    };
+
+    return {
+      brandColor: brand,
+      showSpecTags: showTags,
+      showChamadoPanel: this.props.showChamadoPanel !== false,
+      menu,
+      cur,
+      markUseful: () => this.markUseful(),
+      openReport: () => this.openReport(),
+      cancelReport: () => this.cancelReport(),
+      submitReport: () => this.submitReport(),
+      setReport: (e) => this.setReport(e),
+      fb: {
+        idle: fbState === 'idle',
+        useful: fbState === 'useful',
+        reporting: fbState === 'reporting',
+        submitted: fbState === 'submitted',
+        ticket: this.state.ticket[sc] || ''
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

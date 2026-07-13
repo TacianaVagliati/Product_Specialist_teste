@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    doc-page:not(:defined) { visibility: hidden; }
+    body { margin: 0; }
+    a { color: #2a5f9e; text-decoration: none; }
+    a:hover { color: #1b3a5f; text-decoration: underline; }
+    .doc h2 { font-size: 17px; font-weight: 700; color: #1b3a5f; margin: 30px 0 12px; padding-bottom: 6px; border-bottom: 2px solid #dbe2ea; letter-spacing: -0.2px; }
+    .doc h3 { font-size: 13.5px; font-weight: 600; color: #2a3a52; margin: 20px 0 8px; }
+    .doc p { font-size: 12.5px; line-height: 1.62; color: #2a3444; margin: 0 0 10px; }
+    .doc table { width: 100%; border-collapse: collapse; margin: 6px 0 14px; }
+    .doc th { background: #eef2f7; text-align: left; padding: 7px 10px; font-size: 10px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; color: #4a5a72; border: 1px solid #d6deea; }
+    .doc td { padding: 7px 10px; font-size: 11.5px; line-height: 1.5; color: #2a3444; border: 1px solid #e0e6ee; vertical-align: top; }
+    .doc code, .doc .mono { font-family: 'IBM Plex Mono', monospace; font-size: 11px; }
+    .doc tr { break-inside: avoid; }
+    .doc .card { break-inside: avoid; }
+  </style>
+</helmet>
+
+<x-import component-from-global-scope="doc-page" from="./doc-page.js" size="letter" margin="0.7in" hint-size="100%,100%">
+  <div class="doc" style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1a2432;">
+
+    <!-- Cover header -->
+    <div style="display: flex; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 3px solid #1b3a5f; margin-bottom: 22px;">
+      <div style="width: 30px; height: 30px; background: #1b3a5f; transform: rotate(45deg); border-radius: 5px; position: relative;">
+        <div style="position: absolute; inset: 8px; background: #fff; border-radius: 2px;"></div>
+      </div>
+      <div>
+        <div style="font-size: 20px; font-weight: 700; letter-spacing: -0.4px; color: #1b3a5f;">NovaTech · requirements.md</div>
+        <div style="font-size: 12px; color: #5a6577; margin-top: 1px;">Assistente de Consulta do Atendimento — Query Endpoint · SDD v2</div>
+      </div>
+    </div>
+
+    <table style="margin-bottom: 8px;">
+      <tbody>
+        <tr><td style="width: 34%; background: #f7f9fb; font-weight: 600; color: #47536b;">Módulo</td><td>Query Endpoint (consulta do atendente à base de conhecimento)</td></tr>
+        <tr><td style="background: #f7f9fb; font-weight: 600; color: #47536b;">Cenário · Papel</td><td>2 — Definição e Especificação · Product Specialist</td></tr>
+        <tr><td style="background: #f7f9fb; font-weight: 600; color: #47536b;">Método · Versão</td><td>SDD (Spec-Driven Development) · v2 (após iteração com Tech Lead)</td></tr>
+        <tr><td style="background: #f7f9fb; font-weight: 600; color: #47536b;">Fonte de verdade</td><td>Anexo A — POL-001, PROC-042 v1/v2, SLA-2024, FAQ-Atendimento</td></tr>
+      </tbody>
+    </table>
+
+    <!-- 0. Prior decisions -->
+    <h2>0 · Prior Decisions — herança do Cenário 1</h2>
+    <p>Este módulo <strong>não parte do zero</strong>. Implementa as decisões da fase de Entendimento e Contexto (Cenário-Âncora 1). As ADRs abaixo são pré-requisitos, não escopo deste spec.</p>
+    <table>
+      <thead><tr><th style="width: 12%;">#</th><th style="width: 46%;">Decisão anterior (Cenário 1)</th><th>Impacto neste módulo</th></tr></thead>
+      <tbody>
+        <tr><td class="mono" style="font-weight: 600; color: #1b3a5f;">ADR-01</td><td>Arquitetura <strong>RAG</strong> sobre os 5 documentos do Anexo A (chunking + embedding).</td><td>O endpoint recupera trechos e <strong>sempre</strong> devolve a fonte; não responde "de cabeça".</td></tr>
+        <tr><td class="mono" style="font-weight: 600; color: #1b3a5f;">ADR-02</td><td><strong>Context budget / progressive disclosure</strong> — recuperação seletiva, não injeta os 5 documentos inteiros (aprendizado do Ex. 1.1: excesso de contexto degrada qualidade).</td><td>Top-k limitado; cita apenas os chunks efetivamente usados.</td></tr>
+        <tr><td class="mono" style="font-weight: 600; color: #1b3a5f;">ADR-03</td><td><strong>Contradições não são resolvidas pelo LLM.</strong> PROC-042 v1 vs v2 coexistem sem hierarquia formal.</td><td>A máquina expõe ambas, nunca escolhe silenciosamente (RF-05).</td></tr>
+        <tr><td class="mono" style="font-weight: 600; color: #1b3a5f;">ADR-04</td><td><strong>Autoridade documental é dado de primeira classe:</strong> normativo (POL) &gt; contratual (SLA) &gt; procedimento (PROC) &gt; informal (FAQ).</td><td>Alimenta o cálculo de confiança e o aviso obrigatório de conteúdo de FAQ.</td></tr>
+        <tr><td class="mono" style="font-weight: 600; color: #1b3a5f;">ADR-05</td><td>Infra existente: chamados e medição de SLA em <strong>Azure DevOps</strong>.</td><td>Reusa a identidade do chamado/atendente; não cria novo sistema de tickets.</td></tr>
+      </tbody>
+    </table>
+    <div class="card" style="background: #eef2f7; border-left: 4px solid #1b3a5f; border-radius: 0 6px 6px 0; padding: 10px 14px; margin: 6px 0 4px;">
+      <p style="margin: 0; font-size: 12px;"><strong>Escala de referência (Cenário 1):</strong> ~320 chamados/dia. O endpoint é caminho quente do atendimento — latência e confiabilidade são requisitos, não desejáveis.</p>
+    </div>
+
+    <!-- 1. Bounded contexts -->
+    <h2>1 · Recorte de Domínio — Bounded Contexts</h2>
+    <p>O conhecimento operacional da NovaTech está particionado por <strong>domínio de negócio</strong>, não por camada técnica (não existe contexto "frontend" ou "backend"). O contexto <strong>Atendimento</strong> é o único que este módulo implementa; ele <em>lê</em> os demais.</p>
+
+    <div class="card" style="border: 1px solid #d6deea; border-radius: 8px; overflow: hidden; margin: 4px 0 14px;">
+      <div style="background: #1b3a5f; color: #fff; padding: 10px 14px; text-align: center;">
+        <div style="font-size: 12.5px; font-weight: 600;">ATENDIMENTO · contexto CORE (este módulo)</div>
+        <div style="font-size: 10.5px; opacity: 0.85; margin-top: 2px;">O atendente pergunta → a IA responde com fonte + confiança + escalação</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: #e0e6ee;">
+        <div style="background: #f7f9fb; padding: 9px 8px; text-align: center;"><div style="font-size: 10.5px; font-weight: 600; color: #2a3a52;">Devoluções</div><div class="mono" style="font-size: 9px; color: #7a8698; margin-top: 2px;">POL-001</div></div>
+        <div style="background: #f7f9fb; padding: 9px 8px; text-align: center;"><div style="font-size: 10.5px; font-weight: 600; color: #2a3a52;">Frete Especial</div><div class="mono" style="font-size: 9px; color: #b06a00; margin-top: 2px;">PROC-042 v1⚠v2</div></div>
+        <div style="background: #f7f9fb; padding: 9px 8px; text-align: center;"><div style="font-size: 10.5px; font-weight: 600; color: #2a3a52;">SLAs &amp; Tiers</div><div class="mono" style="font-size: 9px; color: #7a8698; margin-top: 2px;">SLA-2024</div></div>
+        <div style="background: #f7f9fb; padding: 9px 8px; text-align: center;"><div style="font-size: 10.5px; font-weight: 600; color: #2a3a52;">Gestão de Riscos</div><div class="mono" style="font-size: 9px; color: #7a8698; margin-top: 2px;">carga perigosa</div></div>
+        <div style="background: #f3f0ea; padding: 9px 8px; text-align: center;"><div style="font-size: 10.5px; font-weight: 600; color: #8a7550;">Gestão Documental</div><div class="mono" style="font-size: 9px; color: #a89670; margin-top: 2px;">fora de escopo</div></div>
+      </div>
+    </div>
+
+    <h3>1.1 · Contextos consultados (read-only)</h3>
+    <table>
+      <thead><tr><th style="width: 22%;">Bounded context</th><th style="width: 26%;">Fonte de verdade</th><th>Papel na consulta</th></tr></thead>
+      <tbody>
+        <tr><td style="font-weight: 600;">Devoluções</td><td class="mono">POL-001 <span style="color:#7a8698;">(normativo)</span></td><td>Elegibilidade, prazos, exceções, custos, coleta reversa.</td></tr>
+        <tr><td style="font-weight: 600;">Frete Especial</td><td class="mono">PROC-042 v1 <strong style="color:#b06a00;">e</strong> v2 <span style="color:#7a8698;">(sem vigência formal)</span></td><td>Fórmula, multiplicadores regionais, fator de peso, prazo adicional. <strong>Onde vive a contradição.</strong></td></tr>
+        <tr><td style="font-weight: 600;">SLAs &amp; Tiers</td><td class="mono">SLA-2024 <span style="color:#7a8698;">(contratual)</span></td><td>Tiers Gold/Silver/Standard, tempos de resposta/resolução, incidente crítico.</td></tr>
+        <tr><td style="font-weight: 600;">Gestão de Riscos</td><td class="mono">POL-001 §3.2 + FAQ</td><td>Sabe <strong>quando</strong> escalar (carga perigosa, cadeia de frio, lacre) — não executa a tratativa.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>1.2 · Fronteiras — fora de escopo (derivadas dos contextos)</h3>
+    <table>
+      <thead><tr><th style="width: 32%;">Fora de escopo</th><th style="width: 26%;">Contexto responsável</th><th>Por quê</th></tr></thead>
+      <tbody>
+        <tr><td>Ciclo de vida e versionamento das fontes</td><td>Gestão Documental</td><td>O módulo consome documentos; não decide qual PROC-042 é vigente (gap §6).</td></tr>
+        <tr><td><strong>Cálculo real</strong> do valor de frete</td><td>Frete Especial (execução)</td><td>A tabela mensal <span class="mono">.xlsx</span> não é fonte ingerida (ADR-02). Explica a regra, não computa preço.</td></tr>
+        <tr><td>Execução de coleta reversa e reembolso</td><td>Operações / Devoluções</td><td>Informa prazos; não agenda coleta nem processa crédito.</td></tr>
+        <tr><td>Tratativa de carga perigosa devolvida</td><td>Gestão de Riscos</td><td>Termina no encaminhamento ao ramal 4500.</td></tr>
+        <tr><td>Carga danificada / sinistros</td><td>Jurídico</td><td>Existe só no FAQ informal (gap §6); o módulo encaminha, não decide.</td></tr>
+        <tr><td>Descontos e negociação comercial</td><td>Comercial</td><td>Atendente não tem autonomia (FAQ item 45).</td></tr>
+        <tr><td>Frete padrão (&lt; 500 kg)</td><td>— (gap §6)</td><td>Nenhum documento cobre; o módulo declara ausência de fonte (RF-04).</td></tr>
+      </tbody>
+    </table>
+
+    <!-- 2. Ubiquitous language -->
+    <h2>2 · Linguagem Ubíqua</h2>
+    <p>Termos que um LLM <strong>confundiria ou inventaria</strong> sem definição. Todos extraídos do Anexo A — sem termos genéricos ("cliente = quem contrata").</p>
+    <table>
+      <thead><tr><th style="width: 22%;">Termo</th><th style="width: 40%;">Definição (fonte)</th><th>Por que é armadilha para o LLM</th></tr></thead>
+      <tbody>
+        <tr><td style="font-weight: 600;">Tier Gold / Silver / Standard</td><td>Os <strong>três</strong> — e únicos — níveis de cliente (SLA-2024 §1). Gold: &gt; R$ 500k/ano <em>ou</em> &gt; 200 op./mês.</td><td><strong>Não existe "Platinum".</strong> Cliente pode alegar (FAQ item 15); LLM tende a validar tier inexistente.</td></tr>
+        <tr><td style="font-weight: 600;">Carga perigosa</td><td>Carga das <strong>classes 1 a 6 da ANTT</strong> (Res. 5.947/2021) — POL-001 §3.2.</td><td>LLM trata como "carga frágil/valiosa". É classificação regulatória com regra de devolução própria.</td></tr>
+        <tr><td style="font-weight: 600;">Frete especial</td><td>Frete de carga com <strong>peso acima de 500 kg</strong> (PROC-042 §1).</td><td>LLM associa "especial" a urgência/VIP. É estritamente uma faixa de peso.</td></tr>
+        <tr><td style="font-weight: 600;">Incidente crítico</td><td>Gatilhos objetivos (SLA-2024 §3): valor &gt; R$ 100k com status desconhecido &gt; 6h; carga perigosa irregular; &gt; 5 chamados/24h; risco a pessoas.</td><td>LLM usa "crítico" de forma subjetiva. Aqui é binário e dispara SLA reduzido.</td></tr>
+        <tr><td style="font-weight: 600;">SLA de resposta ≠ resolução</td><td>Resposta = 1º retorno; Resolução = problema resolvido (FAQ item 41). Dois relógios por tier.</td><td>LLM funde os dois.</td></tr>
+        <tr><td style="font-weight: 600;">Dias úteis</td><td>Exclui fim de semana e feriados (POL-001 §3.1). Relógio de SLA pausa fora de 08h-18h — <strong>exceto</strong> incidente crítico Gold (SLA-2024 §5).</td><td>LLM calcula em dias corridos e ignora a pausa/exceção.</td></tr>
+        <tr><td style="font-weight: 600;">Cadeia de frio rompida</td><td>Temperatura fora da faixa da NF por <strong>&gt; 30 min contínuos</strong> (sensor IoT) — POL-001 §3.2.</td><td>Critério quantitativo específico; LLM inventaria limites.</td></tr>
+        <tr><td style="font-weight: 600;">Multiplicador regional / Fator de peso</td><td>Componentes da fórmula de frete, <strong>com valores divergentes entre v1 e v2</strong> (§5).</td><td>LLM escolhe um valor sem avisar da divergência.</td></tr>
+        <tr><td style="font-weight: 600;">Documento não-validado</td><td>FAQ-Atendimento: informal, sem responsável, <strong>não validado por Compliance</strong>.</td><td>LLM trata o FAQ com a mesma autoridade de POL/SLA. Exige aviso (RF-06).</td></tr>
+      </tbody>
+    </table>
+
+    <!-- 3. Outcomes -->
+    <h2>3 · Outcomes (orientados a resultado)</h2>
+    <table>
+      <thead><tr><th style="width: 8%;">#</th><th style="width: 50%;">Outcome (resultado, não feature)</th><th>Métrica</th></tr></thead>
+      <tbody>
+        <tr><td class="mono" style="font-weight:600;">O-1</td><td>Atendente obtém resposta fundamentada sem sair do chamado nem procurar o documento.</td><td>≥ 90% respondidas em <strong>&lt; 30s</strong> (dentro do SLA de resposta de todos os tiers).</td></tr>
+        <tr><td class="mono" style="font-weight:600;">O-2</td><td>Atendente cita a fonte ao cliente com segurança.</td><td>100% das respostas exibem documento + trecho de origem.</td></tr>
+        <tr><td class="mono" style="font-weight:600;">O-3</td><td>Atendente nunca repassa fonte não-validada como oficial.</td><td>0 respostas do FAQ sem aviso "não validado por Compliance".</td></tr>
+        <tr><td class="mono" style="font-weight:600;">O-4</td><td>Contradições da base não viram erro operacional.</td><td>0 casos de multiplicador aplicado sem exibir a divergência v1/v2.</td></tr>
+        <tr><td class="mono" style="font-weight:600;">O-5</td><td>Escalações para Gestão de Riscos acontecem quando devem.</td><td>Toda consulta de carga perigosa/cadeia de frio/lacre retorna instrução de escalar (ramal 4500).</td></tr>
+        <tr><td class="mono" style="font-weight:600;">O-6</td><td>A base melhora com o uso.</td><td>Todo feedback negativo gera item na fila de curadoria (RF-08).</td></tr>
+      </tbody>
+    </table>
+
+    <!-- 4. Functional requirements -->
+    <h2>4 · Requisitos Funcionais (verificáveis / binários)</h2>
+    <p>Cada RF é redigido para que o QA escreva um teste <strong>passa/não-passa</strong>.</p>
+    <table>
+      <thead><tr><th style="width: 20%;">RF</th><th style="width: 54%;">Requisito (Given / When / Then)</th><th>Falha (❌)</th></tr></thead>
+      <tbody>
+        <tr><td class="mono" style="font-weight:600; color:#1b3a5f;">RF-01<br>Fonte obrigatória</td><td>Toda resposta contém ≥ 1 documento de origem (ID + trecho citado).</td><td>Sem <span class="mono">sources[]</span></td></tr>
+        <tr><td class="mono" style="font-weight:600; color:#1b3a5f;">RF-02<br>Confiança exibida</td><td>Resposta inclui confiança ∈ {Alta, Média, Baixa} = recuperação × autoridade × contradição (ADR-04).</td><td>Sem <span class="mono">confidence</span></td></tr>
+        <tr><td class="mono" style="font-weight:600; color:#1b3a5f;">RF-03<br>Escalação perigosa</td><td>Consulta de carga perigosa/cadeia de frio/lacre → afirma "não elegível pelo processo padrão" <strong>e</strong> instrui Gestão de Riscos (ramal 4500).</td><td>Falta uma das duas</td></tr>
+        <tr><td class="mono" style="font-weight:600; color:#1b3a5f;">RF-04<br>Ausência de fonte</td><td>Sem fonte na base (frete &lt;500kg, seguro, dano) → declara "sem fonte formal" e <strong>não fabrica</strong> valor.</td><td>Inventa número</td></tr>
+        <tr><td class="mono" style="font-weight:600; color:#1b3a5f;">RF-05<br>Contradição</td><td>Frete com v1 e v2 relevantes → exibe <strong>ambas</strong> + datas + divergência + regra de transição. Nunca escolhe sozinho (ADR-03).</td><td>Cita só uma versão</td></tr>
+        <tr><td class="mono" style="font-weight:600; color:#1b3a5f;">RF-06<br>Aviso FAQ</td><td>Resposta derivada do FAQ → aviso "não validado por Compliance" + confiança ≤ Média.</td><td>FAQ sem aviso / Alta</td></tr>
+        <tr><td class="mono" style="font-weight:600; color:#1b3a5f;">RF-07<br>Tier inexistente</td><td>Menção a tier fora de {Gold, Silver, Standard} → afirma que não existe, lista os três, pede o contrato.</td><td>Valida "Platinum"</td></tr>
+        <tr><td class="mono" style="font-weight:600; color:#1b3a5f;">RF-08<br>Feedback loop</td><td>Atendente marca resposta incorreta → cria item na fila de curadoria (Gestão Documental) roteado ao dono do documento.</td><td>Feedback sem destino</td></tr>
+        <tr><td class="mono" style="font-weight:600; color:#1b3a5f;">RF-09<br>Latência</td><td>Sob carga (~320 chamados/dia), p95 &lt; 30s.</td><td>p95 ≥ 30s</td></tr>
+      </tbody>
+    </table>
+
+    <!-- 5. Verification criteria -->
+    <h2>5 · Verification Criteria — casos-âncora</h2>
+    <table>
+      <thead><tr><th style="width: 8%;">#</th><th style="width: 34%;">Pergunta do atendente</th><th style="width: 46%;">Resultado esperado (pass)</th><th>RF</th></tr></thead>
+      <tbody>
+        <tr><td class="mono" style="font-weight:600;">VC-1</td><td>Devolver carga de líquido inflamável entregue ontem?</td><td>"Não elegível (classe ANTT 3). Encaminhar à Gestão de Riscos — ramal 4500." Fonte POL-001 §3.2.</td><td class="mono">03, 01</td></tr>
+        <tr><td class="mono" style="font-weight:600;">VC-2</td><td>Multiplicador de frete para o Nordeste?</td><td>Exibe <strong>ambas</strong>: v1 = 1.4 / v2 = 1.5, com datas, coexistência e transição. Confiança rebaixada.</td><td class="mono">05, 02</td></tr>
+        <tr><td class="mono" style="font-weight:600;">VC-3</td><td>Cliente diz que é Platinum, qual o SLA?</td><td>"Não existe tier Platinum. Válidos: Gold, Silver, Standard. Peça o nº do contrato."</td><td class="mono">07</td></tr>
+        <tr><td class="mono" style="font-weight:600;">VC-4</td><td>Carga perigosa com frete expresso?</td><td>Responde do FAQ item 32 <strong>com</strong> aviso "não validado"; confiança ≤ Média.</td><td class="mono">06</td></tr>
+        <tr><td class="mono" style="font-weight:600;">VC-5</td><td>Tabela de frete para carga de 300 kg?</td><td>"Sem fonte formal para frete &lt; 500kg. Encaminhar ao Comercial." Não inventa valor.</td><td class="mono">04</td></tr>
+        <tr><td class="mono" style="font-weight:600;">VC-6</td><td>Prazo de resposta para incidente crítico Gold?</td><td>"Até 30 min; o relógio <strong>não pausa</strong> fora do horário para crítico Gold." SLA-2024 §2/§5.</td><td class="mono">01, 02</td></tr>
+      </tbody>
+    </table>
+
+    <!-- 6. Gaps -->
+    <h2>6 · Gaps conhecidos da base</h2>
+    <p>Herdados do Cenário 1. O módulo os <strong>expõe</strong> (via RF-04), não os resolve — resolução pertence à Gestão Documental.</p>
+    <table>
+      <tbody>
+        <tr><td style="width: 34%; font-weight: 600;">PROC-043 (frete de carga perigosa)</td><td>Citada mas não ingerida / em revisão pelo Compliance.</td></tr>
+        <tr><td style="font-weight: 600;">Frete padrão &lt; 500 kg</td><td>Sem documento na base.</td></tr>
+        <tr><td style="font-weight: 600;">Seguro de carga</td><td>Só no FAQ (item 22), sem norma formal.</td></tr>
+        <tr><td style="font-weight: 600;">Carga danificada em trânsito</td><td>Só no FAQ (item 38); processo real é do Jurídico.</td></tr>
+        <tr><td style="font-weight: 600;">Processo interno da Gestão de Riscos</td><td>Não documentado (POL-001 cita só o ramal 4500).</td></tr>
+      </tbody>
+    </table>
+
+    <!-- 7. Iteration -->
+    <h2>7 · Iteração com o Tech Lead (v1 → v2)</h2>
+    <p>Ambiguidades levantadas pelo Tech Lead (Claude) na revisão da v1 e como foram resolvidas na v2 — mudanças <strong>substantivas</strong>, não cosméticas.</p>
+    <table>
+      <thead><tr><th style="width: 8%;">#</th><th style="width: 44%;">Ambiguidade apontada na v1</th><th>Resolução incorporada na v2</th></tr></thead>
+      <tbody>
+        <tr><td class="mono" style="font-weight:600;">A-1</td><td>"Confiança" era um número mágico — v1 não definia o cálculo. <em>"O QA não consegue testar."</em></td><td>RF-02 define a fórmula (recuperação × autoridade — ADR-04 × contradição) e a escala {Alta/Média/Baixa}. FAQ nunca gera Alta (RF-06).</td></tr>
+        <tr><td class="mono" style="font-weight:600;">A-2</td><td>Contradição "usar a mais recente". <em>"E a regra de transição? Chamado antes de 01/12/2023 usa v1."</em></td><td>RF-05 reescrito: a máquina nunca escolhe; exibe ambas + datas + transição e pede o dado que desempata. Alinha com ADR-03.</td></tr>
+        <tr><td class="mono" style="font-weight:600;">A-3</td><td>Escopo vazando: "o assistente calcula o valor do frete". <em>"A tabela .xlsx não está na base — vai alucinar preço."</em></td><td>Movido para fora de escopo (§1.2). O módulo explica a regra e cita a fonte; RF-04 cobre a ausência.</td></tr>
+        <tr><td class="mono" style="font-weight:600;">A-4</td><td>Feedback sem destino: "botão de feedback". <em>"Para onde vai? Quem corrige? Como volta ao assistente?"</em></td><td>RF-08 fecha o loop: feedback → fila de curadoria (Gestão Documental) → dono do documento revisa → reindexação. Sustenta O-6.</td></tr>
+        <tr><td class="mono" style="font-weight:600;">A-5</td><td>Aviso de FAQ opcional: "idealmente avisar". <em>"‘Idealmente’ não é testável e é o maior risco."</em></td><td>Virou requisito duro (RF-06) + rebaixamento automático de confiança; caso-âncora VC-4.</td></tr>
+      </tbody>
+    </table>
+
+    <!-- 8. DoD -->
+    <h2>8 · Definition of Done</h2>
+    <div class="card" style="background: #f7f9fb; border: 1px solid #d6deea; border-radius: 8px; padding: 14px 18px;">
+      <div style="font-size: 12.5px; line-height: 2; color: #2a3444;">
+        ☐&nbsp; Todos os RF-01…RF-09 com teste automatizado passando.<br>
+        ☐&nbsp; Casos-âncora VC-1…VC-6 verdes.<br>
+        ☐&nbsp; Nenhuma resposta em produção deriva do FAQ sem aviso (auditoria RF-06).<br>
+        ☐&nbsp; Fila de curadoria recebendo e roteando feedback (RF-08).<br>
+        ☐&nbsp; p95 &lt; 30s sob carga de referência (RF-09).
+      </div>
+    </div>
+
+    <div style="margin-top: 24px; padding-top: 12px; border-top: 1px solid #dbe2ea; font-size: 10px; color: #9aa4b2; display: flex; justify-content: space-between;">
+      <span>NovaTech · Trilha AI First DGS — Cenário 2 · Product Specialist</span>
+      <span class="mono">requirements.md · SDD v2</span>
+    </div>
+
+  </div>
+</x-import>
+</x-dc>
+</body>
+</html>
