@@ -3,6 +3,8 @@
 **Cenário:** 3  
 **Programa:** Trilha AI First — DGS/DB1
 
+> O guardrail `G-N04` (nunca usar FAQ informal como fonte isolada para tema crítico), citado nas justificativas abaixo, foi formalizado em `docs/guardrails.md` e propagado ao `AGENTS.md` como resultado direto desta revisão (INC-04). Ver também `specs/query-endpoint/harness-produto.md` (Ex. 3.2) para como esse guardrail entra no regression test e no HITL de runtime.
+
 ---
 
 ## Parte 1 — Avaliação Própria (antes do Claude)
