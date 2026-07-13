@@ -1,5 +1,7 @@
 # Exercício 3.2 — Harness de Produto para Melhoria Contínua
-**Papel:** Product Specialist | **Cenário:** 3 | **Programa:** Trilha AI First — DGS/DB1
+**Papel:** Product Specialist  
+**Cenário:** 3  
+**Programa:** Trilha AI First — DGS/DB1
 
 ---
 
