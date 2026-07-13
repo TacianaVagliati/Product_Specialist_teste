@@ -2,8 +2,10 @@
 
 > **Projeto:** NovaTech — Assistente de IA para o time de Atendimento  
 > **Módulo:** Query Endpoint (consulta do atendente à base de conhecimento)  
-> **Cenário:** 2 — Definição e Especificação · **Papel:** Product Specialist  
-> **Método:** SDD (Spec-Driven Development) · **Versão:** v2 (após iteração com Tech Lead)  
+> **Cenário:** 2 — Definição e Especificação  
+> **Papel:** Product Specialist  
+> **Método:** SDD (Spec-Driven Development)  
+> **Versão:** v2 (após iteração com Tech Lead)  
 > **Fonte de verdade do domínio:** Anexo A (POL-001, PROC-042 v1/v2, SLA-2024, FAQ-Atendimento)  
 
 ---
