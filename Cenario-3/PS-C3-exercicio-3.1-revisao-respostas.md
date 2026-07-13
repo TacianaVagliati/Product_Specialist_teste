@@ -1,5 +1,7 @@
 # Exercício 3.1 — Revisão Crítica das Respostas do Assistente
-**Papel:** Product Specialist | **Cenário:** 3 | **Programa:** Trilha AI First — DGS/DB1
+**Papel:** Product Specialist  
+**Cenário:** 3  
+**Programa:** Trilha AI First — DGS/DB1
 
 ---
 
