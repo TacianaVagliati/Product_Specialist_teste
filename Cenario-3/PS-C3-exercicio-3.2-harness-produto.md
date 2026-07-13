@@ -1,6 +1,8 @@
 # Exercício 3.2 — Harness de Produto para Melhoria Contínua
+**Versão:** 1.1 (paths e IDs de guardrail alinhados ao `docs/guardrails.md` atualizado no Cenário 3)  
 **Papel:** Product Specialist  
-**Cenário:** 3  
+**Exercício:** Cenário 3 — Ex. 3.2 (Product Specialist)  
+**Referências:** `docs/guardrails.md`, `specs/query-endpoint/requirements.md` (pendente — Ex. 2.1, Product Specialist/Design), ADR-0002, ADR-0003  
 **Programa:** Trilha AI First — DGS/DB1
 
 ---
