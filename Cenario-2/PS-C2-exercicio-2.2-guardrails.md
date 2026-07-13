@@ -1,9 +1,9 @@
 # Exercício 2.2 — Guardrails Formalizados como Artefato de Produto
 # Guardrails do NovaTech Assistant
 
-> **Papel responsável:** Product Specialist
-> **Exercício:** Cenário 2 — Ex. 2.2 (Product Specialist)
-> **Status:** Aprovado para consumo por agentes de IA — referenciado em `AGENTS.md § Product Rules & Guardrails`
+> **Papel responsável:** Product Specialist  
+> **Exercício:** Cenário 2 — Ex. 2.2 (Product Specialist)  
+> **Status:** Aprovado para consumo por agentes de IA — referenciado em `AGENTS.md § Product Rules & Guardrails`  
 > **Fonte de verdade:** `docs/novatech/` (POL-001, PROC-042 v1/v2, SLA-2024, FAQ-atendimento) + guardrails informais do Cenário 1
 
 ## Contexto
